@@ -28,7 +28,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:padding="10dp"
-                    android:text="title: " />
+                    android:text="Vacation Title: " />
 
                 <EditText
                     android:id="@+id/titletext"
@@ -36,6 +36,45 @@
                     android:layout_height="50dp"
                     android:hint="Vacation 1" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:text="Hotel Name: " />
+
+                <EditText
+                    android:id="@+id/hoteltext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:hint="Hotel" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/startDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:padding="10dp"
+                android:ems="10"
+                android:inputType="date"
+                android:text="Start Date"/>
+
+            <Button
+                android:id="@+id/endDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:padding="10dp"
+                android:ems="10"
+                android:inputType="date"
+                android:text="End Date" />
 
         </LinearLayout>
     </ScrollView>

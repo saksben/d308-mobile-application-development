@@ -17,7 +17,12 @@ import com.wgu.pa.database.Repository;
 import com.wgu.pa.entities.Excursion;
 import com.wgu.pa.entities.Vacation;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class VacationList extends AppCompatActivity {
     private Repository repository;
@@ -78,9 +83,9 @@ public class VacationList extends AppCompatActivity {
         //manually adds sample vacations and excursions to db when user clicks My Sample
         if (item.getItemId() == R.id.mysample) {
             repository = new Repository(getApplication());
-            Vacation vacation = new Vacation(0, "Panama");
+            Vacation vacation = new Vacation(0, "Panama", "Mariott", "09/03/23", "09/04/23");
             repository.insert(vacation);
-            vacation = new Vacation(0, "China");
+            vacation = new Vacation(0, "China", "Hilton", "09/03/23", "09/04/23");
             repository.insert(vacation);
             Excursion excursion = new Excursion(0, "Cycling", 1);
             repository.insert(excursion);
