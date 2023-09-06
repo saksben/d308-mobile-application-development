@@ -3,12 +3,16 @@ package com.wgu.pa.UI;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wgu.pa.R;
@@ -16,7 +20,10 @@ import com.wgu.pa.database.Repository;
 import com.wgu.pa.entities.Excursion;
 import com.wgu.pa.entities.Vacation;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class ExcursionDetails extends AppCompatActivity {
     String title;
@@ -25,6 +32,9 @@ public class ExcursionDetails extends AppCompatActivity {
     EditText editTitle;
     Repository repository;
     Excursion currentExcursion;
+    TextView editExcursionDate;
+    DatePickerDialog.OnDateSetListener excursionDate;
+    final Calendar myCalendarDate = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +47,39 @@ public class ExcursionDetails extends AppCompatActivity {
         editTitle.setText(title);
         excursionID = getIntent().getIntExtra("id", -1);
         vacationID = getIntent().getIntExtra("vacationID", -1);
+
+        //sets up date info
+        String myFormat = "MM/dd/yy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        editExcursionDate = findViewById(R.id.excursionDate);
+
+        editExcursionDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(ExcursionDetails.this, excursionDate, myCalendarDate
+                        .get(Calendar.YEAR), myCalendarDate.get(Calendar.MONTH),
+                        myCalendarDate.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        //sets the calendar instance to whatever is selected
+        excursionDate = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                myCalendarDate.set(Calendar.YEAR, year);
+                myCalendarDate.set(Calendar.MONTH, month);
+                myCalendarDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+        };
+    }
+
+    //updates the date displayed after it is chosen
+    private void updateLabel() {
+        String myFormat = "MM/dd/yy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        editExcursionDate.setText(sdf.format(myCalendarDate.getTime()));
     }
 
     //makes a menu and populates it with menu items
@@ -55,6 +98,10 @@ public class ExcursionDetails extends AppCompatActivity {
 
         //if the user selects the Save Excursion menu option...
         if (item.getItemId() == R.id.excursionsave) {
+            String myFormat = "MM/dd/yy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            String excursionDateString = sdf.format(myCalendarDate.getTime());
+
             Excursion excursion;
             //if the excursion does not already exist...
             if (excursionID == -1) {
@@ -62,12 +109,12 @@ public class ExcursionDetails extends AppCompatActivity {
                 if (repository.getmAllExcursions().size() == 0) excursionID = 1;
                 //else make this excursion the last in the list
                 else excursionID = repository.getmAllExcursions().get(repository.getmAllExcursions().size() - 1).getExcursionID() + 1;
-                excursion = new Excursion(excursionID, editTitle.getText().toString(), vacationID);
+                excursion = new Excursion(excursionID, editTitle.getText().toString(), vacationID, excursionDateString);
                 repository.insert(excursion);
                 this.finish();
             } else {
                 //else if the excursion already exists, update it with the user supplied details
-                excursion = new Excursion(excursionID, editTitle.getText().toString(), vacationID);
+                excursion = new Excursion(excursionID, editTitle.getText().toString(), vacationID, excursionDateString);
                 repository.update(excursion);
                 this.finish();
             }
