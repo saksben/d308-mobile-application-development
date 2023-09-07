@@ -1,17 +1,18 @@
 package com.wgu.pa.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +21,11 @@ import com.wgu.pa.database.Repository;
 import com.wgu.pa.entities.Excursion;
 import com.wgu.pa.entities.Vacation;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class ExcursionDetails extends AppCompatActivity {
@@ -101,22 +104,41 @@ public class ExcursionDetails extends AppCompatActivity {
             String myFormat = "MM/dd/yy";
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
             String excursionDateString = sdf.format(myCalendarDate.getTime());
+            Vacation vacation = null;
+            List<Vacation> vacations = repository.getmAllVacations();
+            for (Vacation vac : vacations) {
+                if (vac.getVacationId() == vacationID) {
+                    vacation = vac;
+                }
+            }
 
-            Excursion excursion;
-            //if the excursion does not already exist...
-            if (excursionID == -1) {
-                //if the excursion list is empty, make this excursion its first excursion
-                if (repository.getmAllExcursions().size() == 0) excursionID = 1;
-                //else make this excursion the last in the list
-                else excursionID = repository.getmAllExcursions().get(repository.getmAllExcursions().size() - 1).getExcursionID() + 1;
-                excursion = new Excursion(excursionID, editTitle.getText().toString(), vacationID, excursionDateString);
-                repository.insert(excursion);
-                this.finish();
-            } else {
-                //else if the excursion already exists, update it with the user supplied details
-                excursion = new Excursion(excursionID, editTitle.getText().toString(), vacationID, excursionDateString);
-                repository.update(excursion);
-                this.finish();
+            try {
+                Date excursionDate = sdf.parse(excursionDateString);
+                Date startDate = sdf.parse(vacation.getStartDate());
+                Date endDate = sdf.parse(vacation.getEndDate());
+                if (excursionDate.before(startDate) || excursionDate.after(endDate)) {
+                    Toast.makeText(this, "Excursion Date must be within the Vacation's Start and End dates", Toast.LENGTH_LONG).show();
+                    return true;
+                } else {
+                    Excursion excursion;
+                    //if the excursion does not already exist...
+                    if (excursionID == -1) {
+                        //if the excursion list is empty, make this excursion its first excursion
+                        if (repository.getmAllExcursions().size() == 0) excursionID = 1;
+                            //else make this excursion the last in the list
+                        else excursionID = repository.getmAllExcursions().get(repository.getmAllExcursions().size() - 1).getExcursionID() + 1;
+                        excursion = new Excursion(excursionID, editTitle.getText().toString(), vacationID, excursionDateString);
+                        repository.insert(excursion);
+                        this.finish();
+                    } else {
+                        //else if the excursion already exists, update it with the user supplied details
+                        excursion = new Excursion(excursionID, editTitle.getText().toString(), vacationID, excursionDateString);
+                        repository.update(excursion);
+                        this.finish();
+                    }
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
             return true;
         }
@@ -129,6 +151,29 @@ public class ExcursionDetails extends AppCompatActivity {
             repository.delete(currentExcursion);
             Toast.makeText(ExcursionDetails.this, currentExcursion.getExcursionTitle() + " was deleted", Toast.LENGTH_LONG).show();
             ExcursionDetails.this.finish();
+        }
+
+        //if the user selects Set Alarm
+        if (item.getItemId() == R.id.excursionalert) {
+            String dateFromScreen = editExcursionDate.getText().toString();
+            String alert = "Excursion " + title + " is today";
+
+            String myFormat = "MM/dd/yy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            Date myDate = null;
+            try {
+                myDate = sdf.parse(dateFromScreen);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Long trigger = myDate.getTime();
+            Intent intent = new Intent(ExcursionDetails.this, MyReceiver.class);
+            intent.putExtra("key", alert);
+            PendingIntent sender = PendingIntent.getBroadcast(ExcursionDetails.this, ++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, trigger, sender);
+
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

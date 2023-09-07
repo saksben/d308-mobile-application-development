@@ -265,6 +265,7 @@ public class VacationDetails extends AppCompatActivity {
             shareData.append("End Date: " + editEndDate.getText().toString() + "\n");
             for (int i = 0; i < filteredExcursions.size(); i++) {
                 shareData.append("Excursion " + (i + 1) + ": " + filteredExcursions.get(i).getExcursionTitle() + "\n");
+                shareData.append("Excursion " + (i + 1) + " Date: " + filteredExcursions.get(i).getExcursionDate() + "\n");
             }
             sentIntent.putExtra(Intent.EXTRA_TEXT, shareData.toString());
             sentIntent.setType("text/plain");
