@@ -1,6 +1,8 @@
 package com.wgu.pa.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -23,6 +25,7 @@ import com.wgu.pa.entities.Vacation;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +42,8 @@ public class ExcursionDetails extends AppCompatActivity {
     DatePickerDialog.OnDateSetListener excursionDate;
     final Calendar myCalendarDate = Calendar.getInstance();
 
+    String setDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,16 +55,34 @@ public class ExcursionDetails extends AppCompatActivity {
         editTitle.setText(title);
         excursionID = getIntent().getIntExtra("id", -1);
         vacationID = getIntent().getIntExtra("vacationID", -1);
+        setDate = getIntent().getStringExtra("excursionDate");
 
         //sets up date info
         String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        if (setDate != null) {
+            try {
+                Date excursionDate = sdf.parse(setDate);
+                myCalendarDate.setTime(excursionDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
 
         editExcursionDate = findViewById(R.id.excursionDate);
 
         editExcursionDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Date date;
+                String info = editExcursionDate.getText().toString();
+                if (info.equals("")) info = setDate;
+                try {
+                    myCalendarDate.setTime(sdf.parse(info));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 new DatePickerDialog(ExcursionDetails.this, excursionDate, myCalendarDate
                         .get(Calendar.YEAR), myCalendarDate.get(Calendar.MONTH),
                         myCalendarDate.get(Calendar.DAY_OF_MONTH)).show();
@@ -177,6 +200,13 @@ public class ExcursionDetails extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        updateLabel();
     }
 
 }

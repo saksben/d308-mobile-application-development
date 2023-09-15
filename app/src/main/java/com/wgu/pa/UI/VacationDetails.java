@@ -40,6 +40,8 @@ public class VacationDetails extends AppCompatActivity {
     String title;
     String hotel;
     int vacationID;
+    String setStartDate;
+    String setEndDate;
 
     EditText editTitle;
     EditText editHotel;
@@ -67,6 +69,8 @@ public class VacationDetails extends AppCompatActivity {
         vacationID = getIntent().getIntExtra("id", -1);
         title = getIntent().getStringExtra("title");
         hotel = getIntent().getStringExtra("hotel");
+        setStartDate = getIntent().getStringExtra("startdate");
+        setEndDate = getIntent().getStringExtra("enddate");
         editTitle.setText(title);
         editHotel.setText(hotel);
 
@@ -97,12 +101,31 @@ public class VacationDetails extends AppCompatActivity {
         String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
+        if (setStartDate != null) {
+            try {
+                Date startDate = sdf.parse(setStartDate);
+                Date endDate = sdf.parse(setEndDate);
+                myCalendarStart.setTime(startDate);
+                myCalendarEnd.setTime(endDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
         editStartDate = findViewById(R.id.startDate);
         editEndDate = findViewById(R.id.endDate);
 
         editStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Date date;
+                String info = editStartDate.getText().toString();
+                if (info.equals("")) info = setStartDate;
+                try {
+                    myCalendarStart.setTime(sdf.parse(info));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 new DatePickerDialog(VacationDetails.this, startDate, myCalendarStart
                         .get(Calendar.YEAR), myCalendarStart.get(Calendar.MONTH),
                         myCalendarStart.get(Calendar.DAY_OF_MONTH)).show();
@@ -123,6 +146,14 @@ public class VacationDetails extends AppCompatActivity {
         editEndDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Date date;
+                String info = editEndDate.getText().toString();
+                if (info.equals("")) info = setEndDate;
+                try {
+                    myCalendarEnd.setTime(sdf.parse(info));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 new DatePickerDialog(VacationDetails.this, endDate, myCalendarEnd
                         .get(Calendar.YEAR), myCalendarEnd.get(Calendar.MONTH),
                         myCalendarEnd.get(Calendar.DAY_OF_MONTH)).show();
@@ -310,5 +341,8 @@ public class VacationDetails extends AppCompatActivity {
             if (e.getVacationID() == vacationID) filteredExcursions.add(e);
         }
         excursionAdapter.setmExcursions(filteredExcursions);
+
+        updateLabelStart();
+        updateLabelEnd();
     }
 }
