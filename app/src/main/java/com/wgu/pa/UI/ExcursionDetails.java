@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 public class ExcursionDetails extends AppCompatActivity {
     String title;
@@ -44,6 +45,9 @@ public class ExcursionDetails extends AppCompatActivity {
 
     String setDate;
 
+    Random rand = new Random();
+    int numAlert = rand.nextInt(99999);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +60,7 @@ public class ExcursionDetails extends AppCompatActivity {
         excursionID = getIntent().getIntExtra("id", -1);
         vacationID = getIntent().getIntExtra("vacationID", -1);
         setDate = getIntent().getStringExtra("excursionDate");
+        numAlert = rand.nextInt(99999);
 
         //sets up date info
         String myFormat = "MM/dd/yy";
@@ -192,9 +197,12 @@ public class ExcursionDetails extends AppCompatActivity {
             Long trigger = myDate.getTime();
             Intent intent = new Intent(ExcursionDetails.this, MyReceiver.class);
             intent.putExtra("key", alert);
-            PendingIntent sender = PendingIntent.getBroadcast(ExcursionDetails.this, ++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
+//            PendingIntent sender = PendingIntent.getBroadcast(ExcursionDetails.this, ++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent sender = PendingIntent.getBroadcast(ExcursionDetails.this, numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             alarmManager.set(AlarmManager.RTC_WAKEUP, trigger, sender);
+            numAlert = rand.nextInt(99999);
+            System.out.println("numAlert Excursion = " + numAlert);
 
             return true;
         }

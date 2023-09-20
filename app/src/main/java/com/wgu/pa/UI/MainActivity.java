@@ -9,9 +9,12 @@ import android.widget.Button;
 
 import com.wgu.pa.R;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
 
-    public static int numAlert;
+//    public static Random rand = new Random();
+//    public static int numAlert = rand.nextInt(99999);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
