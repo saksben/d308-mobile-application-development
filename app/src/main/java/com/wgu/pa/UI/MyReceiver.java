@@ -16,6 +16,7 @@ public class MyReceiver extends BroadcastReceiver {
     String channel_id = "test";
     static int notificationID;
 
+    //sets up alert system
     @Override
     public void onReceive(Context context, Intent intent) {
         Toast.makeText(context, intent.getStringExtra("key"), Toast.LENGTH_LONG).show();

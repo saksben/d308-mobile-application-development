@@ -15,6 +15,7 @@ import com.wgu.pa.entities.Excursion;
 
 import java.util.List;
 
+//sets up the RecyclerView list
 public class ExcursionAdapter extends RecyclerView.Adapter<ExcursionAdapter.ExcursionViewHolder> {
     private List<Excursion> mExcursions;
     private final Context context;
