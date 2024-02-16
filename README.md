@@ -1,8 +1,6 @@
 # Vacation Planner Android App
 
-## D308 Mobile Application Development
-
-This university project was an opportunity to introduce me to programming for android mobile devices using a software development kit (SDK). In this course, I learned how to install and utilize an SDK, build a basic android mobile application using a graphical user interface (GUI), adapt applications to different mobile devices, save data, execute and debug mobile applications using emulators, and deploy an android mobile application.
+This project was an opportunity to introduce me to programming for android mobile devices using a software development kit (SDK). In this course, I learned how to install and utilize an SDK, build a basic android mobile application using a graphical user interface (GUI), adapt applications to different mobile devices, save data, execute and debug mobile applications using emulators, and deploy an android mobile application.
 
 Through it, I was able to:
 
